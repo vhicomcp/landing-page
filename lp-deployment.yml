@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: landingpage
-        image: kovhico/landingpage:latest
+        image: kovhico/landingpage:buildnumber
         ports:
         - containerPort: 80
 ---
@@ -46,7 +46,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: vhico.gonnabegood.xyz
+  - host: cilsy.gonnabegood.xyz
     http:
       paths:
       #- path: /
