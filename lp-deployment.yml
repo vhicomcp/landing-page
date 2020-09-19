@@ -1,0 +1,50 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: landingpage-service
+  namespace: staging
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    #type: LoadBalancer
+  selector:
+    app: landingpage
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landingpage-deployment
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app: landingpage
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: landingpage
+    spec:
+      containers:
+      - name: landingpage
+        image: kovhico/landingpage:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: landingpage-ingress
+  namespace: staging
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: vhico.gonnabegood.xyz
+    http:
+      paths:
+      #- path: /
+      - backend:
+          serviceName: landingpage-service
+          servicePort: 80
