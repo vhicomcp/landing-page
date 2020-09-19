@@ -46,7 +46,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: cilsy.gonnabegood.xyz
+  - host: as-cilsy.gonnabegood.xyz
     http:
       paths:
       #- path: /
