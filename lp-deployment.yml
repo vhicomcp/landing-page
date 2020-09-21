@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: staging
+  name: production
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: landingpage-service
-  namespace: staging
+  namespace: production
 spec:
   ports:
   - port: 80
@@ -20,7 +20,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: landingpage-deployment
-  namespace: staging
+  namespace: production
 spec:
   selector:
     matchLabels:
@@ -41,12 +41,12 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: landingpage-ingress
-  namespace: staging
+  namespace: production
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: as-cilsy.gonnabegood.xyz
+  - host: cilsy.gonnabegood.xyz
     http:
       paths:
       #- path: /
