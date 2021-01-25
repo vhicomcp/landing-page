@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  landingpage:
+    image: 'mcpidinfra/vhico:latest'
+    container_name: 'landing-page'
+    restart: 'always'
+    ports:
+      - "3500:80"
+    # volumes:
+    # # - ./:/var/www/html
+    # - /etc/hosts:/etc/hosts
+    # - /logs/merchant-info-sys:/var/www/html/storage/logs
+    # - /logs/apache2:/var/log/apache2
