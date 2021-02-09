@@ -55,7 +55,7 @@ pipeline {
     }
     post { 
         success {  
-             mail bcc: 'vhico.putra@mcpayment', body: "<b>SUCCES BUILD</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", charset: 'UTF-8', from: 'ops.tech@mcpayment.co.id', cc: 'hendro.triyatmoko@mcpayment.co.id', mimeType: 'text/html', replyTo: '', subject: "SUCCESS CI: Project name -> ${env.JOB_NAME}", to: "vhico.putra@mcpayment.co.id";
+             mail bcc: 'test@mcpayment', body: "<b>SUCCES BUILD</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", charset: 'UTF-8', from: 'ops.tech@mcpayment.co.id', cc: 'hendro.triyatmoko@mcpayment.co.id', mimeType: 'text/html', replyTo: '', subject: "SUCCESS CI: Project name -> ${env.JOB_NAME}", to: "vhico.putra@mcpayment.co.id";
             //  mail bcc: 'vhico.putra@mcpayment', body: "<b>SUCCES BUILD</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", charset: 'UTF-8', from: 'ops.tech@mcpayment.co.id', cc: 'hendro.triyatmoko@mcpayment.co.id', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "hendro.triyatmoko@mcpayment.co.id";  
         }
         failure {  
