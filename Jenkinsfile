@@ -11,6 +11,19 @@ pipeline {
                 sh 'docker build -t mcpidinfra/vhico:$BUILD_NUMBER .'
             }
         }
+        stage('Sonarqube Analysis') {
+            when {
+                branch 'master'
+            }
+            steps {
+                script {
+                    scannerHome = tool 'sonarqube'
+                }
+                withSonarQubeEnv('sonarqube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
         stage('Push Image to Docker hub') {
             when {
                 branch 'master'
