@@ -55,11 +55,7 @@ pipeline {
         script {
           if (env.BRANCH_NAME == 'master') {
             def channel="jenkins"
-            def cred="ifF2n6RtXv1g3g0MXPFtfTtJ"
-            slackNotifier(currentBuild.currentResult,channel,cred)
-          } else if ((env.BRANCH_NAME).startsWith('release/') || (env.gitTag)?.trim() ) {
-            def channel="release"
-            def cred="ifF2n6RtXv1g3g0MXPFtfTtJ"
+            def cred="slack-arvy"
             slackNotifier(currentBuild.currentResult,channel,cred)
           } else {
             echo "No BRANCH specified!"
