@@ -8,20 +8,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'docker build -t mcpidinfra/vhico:$BUILD_NUMBER .'
-            }
-        }
-        stage('Sonarqube Analysis') {
-            when {
-                branch 'master'
-            }
-            steps {
-                script {
-                    scannerHome = tool 'sonarqube'
-                }
-                withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }
+                sh 'docker build -t kovhico/landingpage:$BUILD_NUMBER .'
             }
         }
         stage('Push Image to Docker hub') {
@@ -29,34 +16,29 @@ pipeline {
                 branch 'master'
             }
             steps {
-                withCredentials([string(credentialsId: 'docker_pwd', variable: 'dockerHubPwd')]) {
-                    sh "docker login -u mcpidinfra -p ${dockerHubPwd}"
-                }
-                sh 'docker push mcpidinfra/vhico:$BUILD_NUMBER'
+                // withCredentials([string(credentialsId: 'docker_pwd', variable: 'dockerHubPwd')]) {
+                //     sh "docker login -u mcpidinfra -p ${dockerHubPwd}"
+                sh 'docker push kovhico/landingpage:$BUILD_NUMBER'
             }
         }
-        stage('Deploy to Server PHP-02') {
-            agent { node { label 'PHP-02' } }
+        stage('Deploy to Server') {
+            agent { node { label 'worker' } }
             when {
                 branch 'master'
             }
             steps {
-                withCredentials([string(credentialsId: 'docker_pwd', variable: 'dockerHubPwd')]) {
-                    sh "docker login -u mcpidinfra -p ${dockerHubPwd}"
-                }
                 checkout scm
                 sh """
                 sed -i 's/latest/$BUILD_NUMBER/g' docker-compose.yml
-                docker-compose --project-name=blue up -d
                 """
             }      
         }
-        stage('Remove docker image last build Dev') {
+        stage('Remove docker image last build') {
             when {
                 branch 'master'
             }
             steps {
-                sh 'docker rmi mcpidinfra/vhico:$BUILD_NUMBER'
+                sh 'docker rmi kovhico/landingpage:$BUILD_NUMBER'
             }      
         }
         stage('Git') {
@@ -64,16 +46,25 @@ pipeline {
                 step([$class: 'WsCleanup'])
                 checkout scm
             }
-        }      
-    }
-    post { 
-        success {  
-             mail bcc: 'vhico@mcpayment', body: "<b>SUCCES BUILD</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", charset: 'UTF-8', from: 'ops.tech@mcpayment.co.id', cc: 'hendro.triyatmoko@mcpayment.co.id', mimeType: 'text/html', replyTo: '', subject: "SUCCESS CI: Project name -> ${env.JOB_NAME}", to: "vhico.putra@mcpayment.co.id";
-            //  mail bcc: 'vhico.putra@mcpayment', body: "<b>SUCCES BUILD</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", charset: 'UTF-8', from: 'ops.tech@mcpayment.co.id', cc: 'hendro.triyatmoko@mcpayment.co.id', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "hendro.triyatmoko@mcpayment.co.id";  
         }
-        failure {  
-             mail bcc: 'vhico.putra@mcpayment', body: "<b>ERROR BUILD</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", charset: 'UTF-8', from: 'ops.tech@mcpayment.co.id', cc: 'hendro.triyatmoko@mcpayment.co.id', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "vhico.putra@mcpayment.co.id";
-            //  mail bcc: 'vhico.putra@mcpayment', body: "<b>ERROR BUILD</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", charset: 'UTF-8', from: 'ops.tech@mcpayment.co.id', cc: 'hendro.triyatmoko@mcpayment.co.id', mimeType: 'text/html', replyTo: '', subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "hendro.triyatmoko@mcpayment.co.id";  
-        }    
-    }  
+    }      
+    post {
+      always {
+        echo 'Cleaning up workspace'
+        deleteDir()
+        script {
+          if (env.BRANCH_NAME == 'master') {
+            def channel="jenkins"
+            def cred="ifF2n6RtXv1g3g0MXPFtfTtJ"
+            slackNotifier(currentBuild.currentResult,channel,cred)
+          } else if ((env.BRANCH_NAME).startsWith('release/') || (env.gitTag)?.trim() ) {
+            def channel="release"
+            def cred="ifF2n6RtXv1g3g0MXPFtfTtJ"
+            slackNotifier(currentBuild.currentResult,channel,cred)
+          } else {
+            echo "No BRANCH specified!"
+          }
+        }
+      }
+    }
 }
