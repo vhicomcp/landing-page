@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 pipeline {
     
     agent any
@@ -47,31 +49,31 @@ pipeline {
                 checkout scm
             }
         }
-        stage ('Slack notif') {
-            steps {
-                slackSend baseUrl: 'https://sre-3ln5441.slack.com/',
-                channel: '#jenkins', 
-                color: 'good', 
-                failOnError: true, 
-                message: 'Build Started: ${env.JOB_NAME} ${env.BRANCH_NAME} ${env.BUILD_NUMBER}', 
-                teamDomain: 'sre-3ln5441', 
-                tokenCredentialId: 'slack-arvy'
-            }
-        }
+        // stage ('Slack notif') {
+        //     steps {
+        //         slackSend baseUrl: 'https://sre-3ln5441.slack.com/',
+        //         channel: '#jenkins', 
+        //         color: 'good', 
+        //         failOnError: true, 
+        //         message: 'Build Started: ${env.JOB_NAME} ${env.BRANCH_NAME} ${env.BUILD_NUMBER}', 
+        //         teamDomain: 'sre-3ln5441', 
+        //         tokenCredentialId: 'slack-arvy'
+        //     }
+        // }
     }      
-    // post {
-    //   always {
-    //     echo 'Cleaning up workspace'
-    //     deleteDir()
-    //     script {
-    //       if (env.BRANCH_NAME == 'master') {
-    //         def channel="jenkins"
-    //         def cred="slack-arvy"
-    //         slackNotifier(currentBuild.currentResult,channel,cred)
-    //       } else {
-    //         echo "No BRANCH specified!"
-    //       }
-    //     }
-    //   }
-    // }
+    post {
+      always {
+        echo 'Cleaning up workspace'
+        deleteDir()
+        script {
+          if (env.BRANCH_NAME == 'master') {
+            def channel="jenkins"
+            def cred="slack-arvy"
+            slackNotifier(currentBuild.currentResult,channel,cred)
+          } else {
+            echo "No BRANCH specified!"
+          }
+        }
+      }
+    }
 }
