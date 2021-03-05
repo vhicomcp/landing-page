@@ -61,7 +61,7 @@ pipeline {
         deleteDir()
         script {
           if (env.BRANCH_NAME == 'master') {
-            def chan="jenkins"
+            def channel="jenkins"
             def cred="slack-arvy"
             slackNotifier(currentBuild.currentResult,channel,cred)
           } else {
