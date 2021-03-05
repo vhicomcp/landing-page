@@ -32,6 +32,7 @@ pipeline {
                 checkout scm
                 sh """
                 sed -i 's/latest/$BUILD_NUMBER/g' docker-compose.yml
+                docker-compose up -d
                 """
             }      
         }
