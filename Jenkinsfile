@@ -50,24 +50,24 @@ pipeline {
             }
         }        
     }
-    post {
-        success {
-            slackSend channel: "jenkins", tokenCredentialId: "slack-arvy", color: "good", message: "*SUCCESS*\n Job: *${env.JOB_NAME}* build no.${env.BUILD_NUMBER} \n Environment: `${env.BRANCH_NAME}`\n by ${env.AUTHOR_NAME}\n More info at: ${env.BUILD_URL}"
-        }
-    }      
     // post {
-    //   always {
-    //     echo 'Cleaning up workspace'
-    //     deleteDir()
-    //     script {
-    //       if (env.BRANCH_NAME == 'master') {
-    //         def channel="jenkins"
-    //         def cred="slack-arvy"
-    //         slackNotifier(currentBuild.currentResult,channel,cred)
-    //       } else {
-    //         echo "No BRANCH specified!"
-    //       }
+    //     success {
+    //         slackSend channel: "jenkins", tokenCredentialId: "slack-arvy", color: "good", message: "*SUCCESS*\n Job: *${env.JOB_NAME}* build no.${env.BUILD_NUMBER} \n Environment: `${env.BRANCH_NAME}`\n by ${env.AUTHOR_NAME}\n More info at: ${env.BUILD_URL}"
     //     }
-    //   }
-    // }
+    // }      
+    post {
+      always {
+        echo 'Cleaning up workspace'
+        deleteDir()
+        script {
+          if (env.BRANCH_NAME == 'master') {
+            def chan="jenkins"
+            def cred="slack-arvy"
+            slackNotifier(currentBuild.currentResult,channel,cred)
+          } else {
+            echo "No BRANCH specified!"
+          }
+        }
+      }
+    }
 }
