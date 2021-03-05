@@ -48,13 +48,12 @@ pipeline {
                 step([$class: 'WsCleanup'])
                 checkout scm
             }
+        }        
+    }
+    post {
+        success {
+            slackSend channel: "jenkins", tokenCredentialId: "vhLdbwHqkohqkoqSdPGb6xiD", color: "good", message: "*SUCCESS*\n Job: *${env.JOB_NAME}* build no.${env.BUILD_NUMBER} \n Environment: `${env.BRANCH_NAME}`\n by ${env.AUTHOR_NAME}\n More info at: ${env.BUILD_URL}"
         }
-        post {
-            success {
-                slackSend channel: "jenkins", tokenCredentialId: "vhLdbwHqkohqkoqSdPGb6xiD", color: "good", message: "*SUCCESS*\n Job: *${env.JOB_NAME}* build no.${env.BUILD_NUMBER} \n Environment: `${env.BRANCH_NAME}`\n by ${env.AUTHOR_NAME}\n More info at: ${env.BUILD_URL}"
-            }
-        }
-        
     }      
     // post {
     //   always {
