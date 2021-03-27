@@ -13,6 +13,14 @@ pipeline {
                 sh 'docker build -t kovhico/landingpage:$BUILD_NUMBER .'
             }
         }
+        stage('Build Docker Image') {
+            when {
+                tag 'stage*'
+            }
+            steps {
+                sh 'docker build -t kovhico/landingpage-stg:$BUILD_NUMBER .'
+            }
+        }
         stage('Push Image to Docker hub') {
             when {
                 branch 'master'
@@ -20,7 +28,7 @@ pipeline {
             steps {
                 // withCredentials([string(credentialsId: 'docker_pwd', variable: 'dockerHubPwd')]) {
                 //     sh "docker login -u mcpidinfra -p ${dockerHubPwd}"
-                checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: git@github.com/vhico07/landing-page]], branches: [[name: 'stage']]], poll: false
+                // checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: git@github.com/vhico07/landing-page]], branches: [[name: 'stage@1']]], poll: false
                 sh 'docker push kovhico/landingpage-stg:$BUILD_NUMBER'
             }
         }
