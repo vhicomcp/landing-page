@@ -20,7 +20,8 @@ pipeline {
             steps {
                 // withCredentials([string(credentialsId: 'docker_pwd', variable: 'dockerHubPwd')]) {
                 //     sh "docker login -u mcpidinfra -p ${dockerHubPwd}"
-                sh 'docker push kovhico/landingpage:$BUILD_NUMBER'
+                checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: git@github.com/vhico07/landing-page]], branches: [[name: 'stage']]], poll: false
+                sh 'docker push kovhico/landingpage-stg:$BUILD_NUMBER'
             }
         }
         stage('Deploy to Server') {
